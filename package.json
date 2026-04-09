@@ -1,0 +1,8 @@
+{
+  "name": "43-industries-site",
+  "private": true,
+  "description": "Marketing site for 43 Industries (Netlify static deploy)",
+  "scripts": {
+    "build": "node scripts/netlify-build.js"
+  }
+}

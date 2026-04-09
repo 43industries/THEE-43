@@ -1,0 +1,25 @@
+# 43 Industries — static site
+# After connecting this repo in Netlify, add Environment variables (Site settings → Environment variables):
+#   WEB3FORMS_ACCESS_KEY      → from https://web3forms.com
+#   SHOPIFY_SHOP_DOMAIN       → your-shop.myshopify.com (no https)
+#   SHOPIFY_STOREFRONT_TOKEN  → Storefront API public access token
+#   SHOPIFY_STOREFRONT_URL    → https://your-custom-domain.com  (customer-facing URL)
+#   SHOPIFY_COLLECTION_PATH   → optional, default /collections/all
+#
+# Deploy: connect Git and use defaults below, or run `npm run build` locally (outputs dist/).
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Basic hardening for a static marketing site
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"

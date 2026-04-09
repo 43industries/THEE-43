@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>43 Industries — Creative Technology & Streetwear</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                    display: ['Space Grotesk', 'sans-serif'],
+                },
+                colors: {
+                    brand: {
+                        black: '#0a0a0a',
+                        dark: '#111111',
+                        accent: '#ff3d00',
+                        orange: '#ff6b00',
+                        gray: '#1a1a1a'
+                    }
+                },
+                animation: {
+                    'marquee': 'marquee 25s linear infinite',
+                    'marquee-reverse': 'marquee-reverse 25s linear infinite',
+                    'float': 'float 6s ease-in-out infinite',
+                    'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                },
+                keyframes: {
+                    marquee: {
+                        '0%': { transform: 'translateX(0%)' },
+                        '100%': { transform: 'translateX(-100%)' },
+                    },
+                    'marquee-reverse': {
+                        '0%': { transform: 'translateX(-100%)' },
+                        '100%': { transform: 'translateX(0%)' },
+                    },
+                    float: {
+                        '0%, 100%': { transform: 'translateY(0)' },
+                        '50%': { transform: 'translateY(-20px)' },
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<!-- Three.js for hero effect -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+    body {
+        background-color: #0a0a0a;
+        color: #ffffff;
+        overflow-x: hidden;
+    }
+    
+    .grain {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+    
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .text-gradient {
+        background: linear-gradient(135deg, #fff 0%, #888 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .text-gradient-accent {
+        background: linear-gradient(135deg, #ff3d00 0%, #ff9100 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .hover-lift {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(255, 61, 0, 0.15);
+    }
+    
+    .magnetic-btn {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .nav-link {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: #ff3d00;
+        transform: translateX(-101%);
+        transition: transform 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+        transform: translateX(0);
+    }
+    
+    .glitch {
+        position: relative;
+    }
+    
+    .glitch::before,
+    .glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .glitch::before {
+        animation: glitch-1 2s infinite linear alternate-reverse;
+        color: #ff3d00;
+        z-index: -1;
+    }
+    
+    .glitch::after {
+        animation: glitch-2 2s infinite linear alternate-reverse;
+        color: #00ffff;
+        z-index: -2;
+    }
+    
+    @keyframes glitch-1 {
+        0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+        20% { clip-path: inset(20% 0 30% 0); transform: translate(-2px, 2px); }
+        40% { clip-path: inset(50% 0 20% 0); transform: translate(2px, -2px); }
+        60% { clip-path: inset(10% 0 60% 0); transform: translate(-2px, 0); }
+        80% { clip-path: inset(80% 0 5% 0); transform: translate(2px, 2px); }
+    }
+    
+    @keyframes glitch-2 {
+        0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+        20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -2px); }
+        40% { clip-path: inset(30% 0 40% 0); transform: translate(-2px, 2px); }
+        60% { clip-path: inset(10% 0 70% 0); transform: translate(2px, 0); }
+        80% { clip-path: inset(40% 0 30% 0); transform: translate(-2px, -2px); }
+    }
+    
+    .custom-cursor {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ff3d00;
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 10000;
+        transition: transform 0.2s ease, background 0.2s ease;
+        mix-blend-mode: difference;
+    }
+    
+    .custom-cursor.hover {
+        transform: scale(2);
+        background: rgba(255, 61, 0, 0.1);
+    }
+    
+    .reveal-text {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+    }
+    
+    .char {
+        display: inline-block;
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    
+    .service-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .service-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,61,0,0.15) 0%, transparent 50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .service-card:hover::before {
+        opacity: 1;
+    }
+    
+    .product-showcase {
+        perspective: 1000px;
+    }
+    
+    .product-card {
+        transform-style: preserve-3d;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .product-card:hover {
+        transform: rotateY(10deg) rotateX(5deg);
+    }
+    
+    .stat-number {
+        font-variant-numeric: tabular-nums;
+    }
+</style>
+</head>
+<body>
+
+<!-- Grain Overlay -->
+<div class="grain"></div>
+
+<!-- Custom Cursor -->
+<div class="custom-cursor hidden md:block"></div>
+
+<!-- Navigation -->
+<nav class="fixed top-0 w-full z-50 transition-all duration-300" id="navbar">
+    <div class="glass-panel border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-display font-bold tracking-tighter flex items-center gap-2 group">
+                <span class="text-brand-accent text-3xl group-hover:rotate-12 transition-transform duration-300">43</span>
+                <span class="hidden sm:inline">INDUSTRIES</span>
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
+                <a href="#about" class="nav-link py-2 hover:text-brand-accent transition-colors">ABOUT</a>
+                <a href="#services" class="nav-link py-2 hover:text-brand-accent transition-colors">SERVICES</a>
+                <a href="#work" class="nav-link py-2 hover:text-brand-accent transition-colors">WORK</a>
+                <a href="#store" class="nav-link py-2 hover:text-brand-accent transition-colors">STORE</a>
+                <button type="button" id="nav-cart-btn" class="nav-link py-2 hover:text-brand-accent transition-colors text-left">
+                    CART <span class="js-cart-count text-brand-accent tabular-nums">0</span>
+                </button>
+                <a href="#contact" class="px-6 py-2 bg-brand-accent hover:bg-brand-orange text-white rounded-full transition-all hover:scale-105">
+                    START PROJECT
+                </a>
+            </div>
+            
+            <div class="flex md:hidden items-center gap-4">
+                <button type="button" id="nav-cart-btn-mobile" class="text-sm font-medium tracking-wide text-white py-2">
+                    CART (<span class="js-cart-count text-brand-accent tabular-nums">0</span>)
+                </button>
+                <button onclick="toggleMobileMenu()" class="text-white p-2" aria-label="Open menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden glass-panel border-b border-white/10">
+        <div class="px-6 py-8 space-y-4 flex flex-col">
+            <a href="#about" class="text-lg hover:text-brand-accent transition-colors" onclick="toggleMobileMenu()">ABOUT</a>
+            <a href="#services" class="text-lg hover:text-brand-accent transition-colors" onclick="toggleMobileMenu()">SERVICES</a>
+            <a href="#work" class="text-lg hover:text-brand-accent transition-colors" onclick="toggleMobileMenu()">WORK</a>
+            <a href="#store" class="text-lg hover:text-brand-accent transition-colors" onclick="toggleMobileMenu()">STORE</a>
+            <button type="button" class="text-lg text-left hover:text-brand-accent transition-colors" onclick="if(window.openShopifyCheckout)window.openShopifyCheckout(); toggleMobileMenu();">CHECKOUT CART</button>
+            <a href="#contact" class="mt-4 px-6 py-3 bg-brand-accent text-white rounded-full text-center" onclick="toggleMobileMenu()">START PROJECT</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <!-- WebGL Canvas Background -->
+    <canvas id="hero-canvas" class="absolute inset-0 w-full h-full"></canvas>
+    
+    <!-- Gradient Overlays -->
+    <div class="absolute inset-0 bg-gradient-to-b from-brand-black via-transparent to-brand-black pointer-events-none"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-brand-accent/10 via-transparent to-brand-orange/10 pointer-events-none"></div>
+    
+    <!-- Floating Elements -->
+    <div class="absolute top-1/4 left-10 w-64 h-64 bg-brand-accent/20 rounded-full blur-[100px] animate-pulse-slow"></div>
+    <div class="absolute bottom-1/4 right-10 w-96 h-96 bg-brand-orange/10 rounded-full blur-[120px] animate-pulse-slow delay-1000"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-6 text-center">
+        <div class="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-white/10">
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            <span class="text-xs font-medium tracking-widest text-gray-400">NOW ACCEPTING PROJECTS</span>
+        </div>
+        
+        <h1 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-display font-bold leading-none tracking-tighter mb-8 glitch" data-text="DISTINCT">
+            <span class="block text-gradient">DISTINCT</span>
+            <span class="block text-gradient-accent">DIGITAL</span>
+            <span class="block text-white/90">CULTURE</span>
+        </h1>
+        
+        <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed">
+            43 Industries is a creative technology studio rooted in street culture. 
+            We build digital experiences and distinct fashion for the modern era.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="#work" class="magnetic-btn px-8 py-4 bg-brand-accent hover:bg-brand-orange text-white rounded-full font-medium transition-all flex items-center gap-3 group">
+                VIEW OUR WORK
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+            <a href="#store" class="magnetic-btn px-8 py-4 glass-panel hover:bg-white/5 text-white rounded-full font-medium transition-all border border-white/20">
+                VISIT STORE
+            </a>
+        </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
+        <span class="text-xs tracking-widest">SCROLL</span>
+        <div class="w-px h-12 bg-gradient-to-b from-white to-transparent"></div>
+    </div>
+</section>
+
+<!-- Marquee Section -->
+<div class="py-8 border-y border-white/10 bg-brand-dark/50 overflow-hidden">
+    <div class="flex whitespace-nowrap">
+        <div class="animate-marquee flex items-center gap-8 text-4xl font-display font-bold text-white/10">
+            <span>WEB DEVELOPMENT</span>
+            <span class="text-brand-accent">•</span>
+            <span>BRAND IDENTITY</span>
+            <span class="text-brand-accent">•</span>
+            <span>APP DESIGN</span>
+            <span class="text-brand-accent">•</span>
+            <span>STREETWEAR</span>
+            <span class="text-brand-accent">•</span>
+            <span>DIGITAL STRATEGY</span>
+            <span class="text-brand-accent">•</span>
+            <span>UI/UX DESIGN</span>
+            <span class="text-brand-accent">•</span>
+            <span>WEB DEVELOPMENT</span>
+            <span class="text-brand-accent">•</span>
+            <span>BRAND IDENTITY</span>
+            <span class="text-brand-accent">•</span>
+            <span>APP DESIGN</span>
+            <span class="text-brand-accent">•</span>
+            <span>STREETWEAR</span>
+            <span class="text-brand-accent">•</span>
+            <span>DIGITAL STRATEGY</span>
+            <span class="text-brand-accent">•</span>
+            <span>UI/UX DESIGN</span>
+            <span class="text-brand-accent">•</span>
+        </div>
+    </div>
+</div>
+
+<!-- About Section -->
+<section id="about" class="py-32 relative">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="space-y-8">
+                <div>
+                    <h2 class="text-sm font-medium text-brand-accent tracking-widest mb-4">ABOUT US</h2>
+                    <h3 class="text-5xl md:text-6xl font-display font-bold leading-tight mb-6">
+                        BORN FROM <span class="text-gradient-accent">STREET</span> CULTURE
+                    </h3>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        Founded in Louisville, Kentucky, 43 Industries started as a vision to bridge the gap between 
+                        authentic streetwear culture and cutting-edge digital innovation. Today, we operate as both 
+                        a creative technology studio and a distinct fashion brand.
+                    </p>
+                </div>
+                
+                <p class="text-gray-400 text-lg leading-relaxed">
+                    Led by our CEO and lead developer, we bring a unique perspective to every project—combining 
+                    technical excellence with cultural authenticity. From full-stack applications to limited apparel drops, 
+                    we create with purpose and precision.
+                </p>
+
+                <div class="grid grid-cols-3 gap-8 pt-8 border-t border-white/10">
+                    <div class="space-y-2">
+                        <div class="text-4xl font-display font-bold text-brand-accent stat-number" data-target="8">0</div>
+                        <div class="text-sm text-gray-500 uppercase tracking-wider">Years Active</div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="text-4xl font-display font-bold text-brand-accent stat-number" data-target="150">0</div>
+                        <div class="text-sm text-gray-500 uppercase tracking-wider">Projects Done</div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="text-4xl font-display font-bold text-brand-accent stat-number" data-target="50">0</div>
+                        <div class="text-sm text-gray-500 uppercase tracking-wider">Brand Drops</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="relative">
+                <div class="aspect-[4/5] rounded-2xl overflow-hidden glass-panel p-3">
+                    <div class="w-full h-full bg-gradient-to-br from-brand-accent/20 to-purple-600/20 rounded-xl flex items-center justify-center relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+                        <div class="text-center z-10">
+                            <div class="text-8xl mb-4 animate-float">🏢</div>
+                            <p class="text-gray-400 font-display text-xl">43 INDUSTRIES HQ</p>
+                            <p class="text-gray-600 text-sm mt-2">Louisville, Kentucky</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Decorative elements -->
+                <div class="absolute -bottom-6 -right-6 w-48 h-48 bg-brand-accent/20 rounded-full blur-3xl -z-10"></div>
+                <div class="absolute -top-6 -left-6 w-32 h-32 bg-brand-orange/20 rounded-full blur-2xl -z-10"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section id="services" class="py-32 bg-brand-dark/30 relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-accent/5 via-transparent to-transparent"></div>
+    
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <div class="text-center mb-20">
+            <h2 class="text-sm font-medium text-brand-accent tracking-widest mb-4">WHAT WE DO</h2>
+            <h3 class="text-5xl md:text-6xl font-display font-bold mb-6">
+                END TO END <span class="text-gradient-accent">SOLUTIONS</span>
+            </h3>
+            <p class="text-gray-400 text-xl max-w-2xl mx-auto">
+                From code to culture, we deliver comprehensive digital and creative services
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Service 1 -->
+            <div class="service-card relative rounded-2xl p-8 hover-lift overflow-hidden group cursor-pointer" onmousemove="handleMouseMove(event, this)" onmouseleave="handleMouseLeave(this)">
+                <div class="relative z-10">
+                    <div class="w-14 h-14 bg-brand-accent/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-accent/20 transition-colors">
+                        <svg class="w-7 h-7 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold mb-3">Full Stack Development</h4>
+                    <p class="text-gray-400 mb-6">Custom web applications, e-commerce platforms, and scalable backend systems built with modern technologies.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            React / Next.js / Node.js
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Cloud Architecture
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            API Development
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Service 2 -->
+            <div class="service-card relative rounded-2xl p-8 hover-lift overflow-hidden group cursor-pointer" onmousemove="handleMouseMove(event, this)" onmouseleave="handleMouseLeave(this)">
+                <div class="relative z-10">
+                    <div class="w-14 h-14 bg-brand-accent/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-accent/20 transition-colors">
+                        <svg class="w-7 h-7 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold mb-3">Brand Identity</h4>
+                    <p class="text-gray-400 mb-6">Comprehensive branding solutions that capture the essence of street culture and modern aesthetics.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Logo & Visual Identity
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Brand Strategy
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Art Direction
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Service 3 -->
+            <div class="service-card relative rounded-2xl p-8 hover-lift overflow-hidden group cursor-pointer" onmousemove="handleMouseMove(event, this)" onmouseleave="handleMouseLeave(this)">
+                <div class="relative z-10">
+                    <div class="w-14 h-14 bg-brand-accent/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-accent/20 transition-colors">
+                        <svg class="w-7 h-7 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold mb-3">App Development</h4>
+                    <p class="text-gray-400 mb-6">Native and cross-platform mobile applications with intuitive UX and robust functionality.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            iOS & Android
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            React Native
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            UI/UX Design
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Service 4 -->
+            <div class="service-card relative rounded-2xl p-8 hover-lift overflow-hidden group cursor-pointer" onmousemove="handleMouseMove(event, this)" onmouseleave="handleMouseLeave(this)">
+                <div class="relative z-10">
+                    <div class="w-14 h-14 bg-brand-accent/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-accent/20 transition-colors">
+                        <svg class="w-7 h-7 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold mb-3">E-Commerce</h4>
+                    <p class="text-gray-400 mb-6">Custom shopping experiences with seamless checkout, inventory management, and brand integration.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Shopify / Custom
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Payment Integration
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Inventory Systems
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Service 5 -->
+            <div class="service-card relative rounded-2xl p-8 hover-lift overflow-hidden group cursor-pointer" onmousemove="handleMouseMove(event, this)" onmouseleave="handleMouseLeave(this)">
+                <div class="relative z-10">
+                    <div class="w-14 h-14 bg-brand-accent/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-accent/20 transition-colors">
+                        <svg class="w-7 h-7 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold mb-3">Content Creation</h4>
+                    <p class="text-gray-400 mb-6">High-quality photography, video production, and digital content that tells your brand story.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Product Photography
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Video Production
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Social Media
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Service 6 -->
+            <div class="service-card relative rounded-2xl p-8 hover-lift overflow-hidden group cursor-pointer" onmousemove="handleMouseMove(event, this)" onmouseleave="handleMouseLeave(this)">
+                <div class="relative z-10">
+                    <div class="w-14 h-14 bg-brand-accent/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-accent/20 transition-colors">
+                        <svg class="w-7 h-7 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold mb-3">Digital Strategy</h4>
+                    <p class="text-gray-400 mb-6">Data-driven marketing strategies, SEO, and growth hacking for maximum impact.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Growth Marketing
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            SEO & Analytics
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                            Campaign Management
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Work Section -->
+<section id="work" class="py-32">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+            <div>
+                <h2 class="text-sm font-medium text-brand-accent tracking-widest mb-4">SELECTED WORK</h2>
+                <h3 class="text-5xl md:text-6xl font-display font-bold">
+                    FEATURED <span class="text-gradient-accent">PROJECTS</span>
+                </h3>
+            </div>
+            <a href="#" class="group flex items-center gap-2 text-brand-accent hover:text-brand-orange transition-colors">
+                <span class="font-medium">View All Projects</span>
+                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Project 1 -->
+            <div class="group relative overflow-hidden rounded-2xl glass-panel hover-lift cursor-pointer">
+                <div class="aspect-[16/10] bg-gradient-to-br from-blue-600/20 to-purple-600/20 flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\' fill=\'%23ffffff\' fill-opacity=\'0.05\' fill-rule=\'evenodd\'/%3E%3C/svg%3E')] opacity-30"></div>
+                    <span class="text-6xl group-hover:scale-110 transition-transform duration-500">🚀</span>
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-3 py-1 rounded-full bg-brand-accent/10 text-brand-accent text-xs font-medium">WEB APP</span>
+                        <span class="text-gray-500 text-sm">2025</span>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold mb-2 group-hover:text-brand-accent transition-colors">SaaS Dashboard Platform</h4>
+                    <p class="text-gray-400 mb-4">Enterprise analytics platform with real-time data visualization and AI-powered insights.</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">Next.js</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">PostgreSQL</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">AWS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="group relative overflow-hidden rounded-2xl glass-panel hover-lift cursor-pointer">
+                <div class="aspect-[16/10] bg-gradient-to-br from-orange-600/20 to-red-600/20 flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+                    <span class="text-6xl group-hover:scale-110 transition-transform duration-500">🛍️</span>
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-3 py-1 rounded-full bg-brand-accent/10 text-brand-accent text-xs font-medium">E-COMMERCE</span>
+                        <span class="text-gray-500 text-sm">2025</span>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold mb-2 group-hover:text-brand-accent transition-colors">Streetwear Marketplace</h4>
+                    <p class="text-gray-400 mb-4">Limited drop platform with queue system, authentication, and resale marketplace features.</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">Shopify</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">Node.js</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">Redis</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 3 -->
+            <div class="group relative overflow-hidden rounded-2xl glass-panel hover-lift cursor-pointer">
+                <div class="aspect-[16/10] bg-gradient-to-br from-green-600/20 to-emerald-600/20 flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\' fill=\'%23ffffff\' fill-opacity=\'0.05\' fill-rule=\'evenodd\'/%3E%3C/svg%3E')] opacity-30"></div>
+                    <span class="text-6xl group-hover:scale-110 transition-transform duration-500">📱</span>
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-3 py-1 rounded-full bg-brand-accent/10 text-brand-accent text-xs font-medium">MOBILE APP</span>
+                        <span class="text-gray-500 text-sm">2024</span>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold mb-2 group-hover:text-brand-accent transition-colors">Social Fitness Tracker</h4>
+                    <p class="text-gray-400 mb-4">Community-driven fitness app with social features, challenges, and wearable integration.</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">React Native</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">Firebase</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">HealthKit</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 4 -->
+            <div class="group relative overflow-hidden rounded-2xl glass-panel hover-lift cursor-pointer">
+                <div class="aspect-[16/10] bg-gradient-to-br from-purple-600/20 to-pink-600/20 flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+                    <span class="text-6xl group-hover:scale-110 transition-transform duration-500">🎨</span>
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-3 py-1 rounded-full bg-brand-accent/10 text-brand-accent text-xs font-medium">BRAND IDENTITY</span>
+                        <span class="text-gray-500 text-sm">2024</span>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold mb-2 group-hover:text-brand-accent transition-colors">Lifestyle Brand Launch</h4>
+                    <p class="text-gray-400 mb-4">Complete brand identity including logo, packaging, web presence, and launch campaign.</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">Branding</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">Web Design</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 text-xs border border-white/10">Packaging</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Store Section -->
+<section id="store" class="py-32 bg-brand-dark/30 relative">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-sm font-medium text-brand-accent tracking-widest mb-4">43 INDUSTRIES STORE</h2>
+            <h3 class="text-5xl md:text-6xl font-display font-bold mb-6">
+                LATEST <span class="text-gradient-accent">DROPS</span>
+            </h3>
+            <p class="text-gray-400 text-xl max-w-2xl mx-auto">
+                Limited edition streetwear and accessories. Distinct by design.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 product-showcase">
+            <!-- Product 1: set data-shopify-variant-gid to gid://shopify/ProductVariant/YOUR_ID from Shopify Admin → product → variant -->
+            <div class="product-card group cursor-pointer" data-product-handle="logo-tee-black">
+                <div class="aspect-square rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 mb-6 relative overflow-hidden border border-white/10">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="text-8xl group-hover:scale-110 transition-transform duration-500">👕</span>
+                    </div>
+                    <div class="absolute top-4 right-4 px-3 py-1 bg-brand-accent text-white text-xs font-bold rounded-full">NEW</div>
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a href="#" data-quick-view class="px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-brand-accent hover:text-white transition-colors">Quick View</a>
+                    </div>
+                </div>
+                <h4 class="text-xl font-display font-bold mb-1">Logo Tee - Black</h4>
+                <p class="text-gray-500 text-sm mb-3">Heavyweight cotton, oversized fit</p>
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-xl font-bold text-brand-accent">$45.00</span>
+                    <button type="button" class="shopify-add-to-cart w-10 h-10 rounded-full bg-white/5 hover:bg-brand-accent flex items-center justify-center transition-colors cursor-pointer" data-shopify-variant-gid="" aria-label="Add Logo Tee to cart">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card group cursor-pointer" data-product-handle="43-snapback">
+                <div class="aspect-square rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 mb-6 relative overflow-hidden border border-white/10">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="text-8xl group-hover:scale-110 transition-transform duration-500">🧢</span>
+                    </div>
+                    <div class="absolute top-4 right-4 px-3 py-1 bg-brand-accent text-white text-xs font-bold rounded-full">LIMITED</div>
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a href="#" data-quick-view class="px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-brand-accent hover:text-white transition-colors">Quick View</a>
+                    </div>
+                </div>
+                <h4 class="text-xl font-display font-bold mb-1">43 Snapback</h4>
+                <p class="text-gray-500 text-sm mb-3">Embroidered logo, adjustable</p>
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-xl font-bold text-brand-accent">$35.00</span>
+                    <button type="button" class="shopify-add-to-cart w-10 h-10 rounded-full bg-white/5 hover:bg-brand-accent flex items-center justify-center transition-colors cursor-pointer" data-shopify-variant-gid="" aria-label="Add 43 Snapback to cart">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card group cursor-pointer" data-product-handle="utility-tote">
+                <div class="aspect-square rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 mb-6 relative overflow-hidden border border-white/10">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="text-8xl group-hover:scale-110 transition-transform duration-500">👜</span>
+                    </div>
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a href="#" data-quick-view class="px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-brand-accent hover:text-white transition-colors">Quick View</a>
+                    </div>
+                </div>
+                <h4 class="text-xl font-display font-bold mb-1">Utility Tote</h4>
+                <p class="text-gray-500 text-sm mb-3">Canvas, multiple pockets</p>
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-xl font-bold text-brand-accent">$55.00</span>
+                    <button type="button" class="shopify-add-to-cart w-10 h-10 rounded-full bg-white/5 hover:bg-brand-accent flex items-center justify-center transition-colors cursor-pointer" data-shopify-variant-gid="" aria-label="Add Utility Tote to cart">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <p id="store-cart-toast" class="text-center text-sm text-gray-500 mt-6 min-h-[1.25rem]" aria-live="polite"></p>
+
+        <div class="text-center mt-12">
+            <a id="shopify-collection-link" href="#" class="inline-flex items-center gap-2 px-8 py-4 border border-white/20 rounded-full hover:bg-white hover:text-black transition-all">
+                <span>View Full Collection</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Instagram Feed Section -->
+<section class="py-20 border-y border-white/10">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex items-center justify-between mb-12">
+            <div>
+                <h3 class="text-3xl font-display font-bold mb-2">FOLLOW THE MOVEMENT</h3>
+                <p class="text-gray-400">@43_industries on Instagram</p>
+            </div>
+            <a href="https://instagram.com/43_industries" target="_blank" class="hidden sm:flex items-center gap-2 text-brand-accent hover:text-brand-orange transition-colors">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+                <span class="font-medium">Follow Us</span>
+            </a>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="aspect-square bg-gray-800 rounded-lg overflow-hidden hover:opacity-80 transition-opacity cursor-pointer relative group">
+                <div class="absolute inset-0 flex items-center justify-center text-4xl">📸</div>
+                <div class="absolute inset-0 bg-brand-accent/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="aspect-square bg-gray-800 rounded-lg overflow-hidden hover:opacity-80 transition-opacity cursor-pointer relative group">
+                <div class="absolute inset-0 flex items-center justify-center text-4xl">🎨</div>
+                <div class="absolute inset-0 bg-brand-accent/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="aspect-square bg-gray-800 rounded-lg overflow-hidden hover:opacity-80 transition-opacity cursor-pointer relative group">
+                <div class="absolute inset-0 flex items-center justify-center text-4xl">🔥</div>
+                <div class="absolute inset-0 bg-brand-accent/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="aspect-square bg-gray-800 rounded-lg overflow-hidden hover:opacity-80 transition-opacity cursor-pointer relative group">
+                <div class="absolute inset-0 flex items-center justify-center text-4xl">💻</div>
+                <div class="absolute inset-0 bg-brand-accent/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-10 sm:hidden">
+            <a href="https://instagram.com/43_industries" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-brand-accent hover:text-brand-orange transition-colors font-medium">Follow @43_industries</a>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="py-32 relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-brand-accent/10 via-transparent to-transparent pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <div class="grid lg:grid-cols-2 gap-16 items-start">
+            <div>
+                <h2 class="text-sm font-medium text-brand-accent tracking-widest mb-4">GET IN TOUCH</h2>
+                <h3 class="text-5xl md:text-6xl font-display font-bold mb-6">
+                    START A <span class="text-gradient-accent">PROJECT</span>
+                </h3>
+                <p class="text-gray-400 text-lg leading-relaxed mb-10 max-w-lg">
+                    Tell us about your product, brand, or drop. We reply within two business days.
+                </p>
+                <div class="space-y-4 text-gray-300">
+                    <a href="mailto:hello@43industries.com" class="flex items-center gap-3 hover:text-brand-accent transition-colors">
+                        <span class="w-10 h-10 rounded-lg glass-panel flex items-center justify-center text-brand-accent">@</span>
+                        <span>hello@43industries.com</span>
+                    </a>
+                    <p class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-lg glass-panel flex items-center justify-center text-brand-accent">📍</span>
+                        <span>Louisville, Kentucky</span>
+                    </p>
+                </div>
+            </div>
+            <form id="contact-form" class="glass-panel rounded-2xl p-8 md:p-10 space-y-6 border border-white/10">
+                <div class="grid sm:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-xs uppercase tracking-wider text-gray-500 mb-2">Name</label>
+                        <input type="text" id="name" name="name" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors" placeholder="Your name">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-xs uppercase tracking-wider text-gray-500 mb-2">Email</label>
+                        <input type="email" id="email" name="email" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors" placeholder="you@email.com">
+                    </div>
+                </div>
+                <div>
+                    <label for="budget" class="block text-xs uppercase tracking-wider text-gray-500 mb-2">Project type</label>
+                    <select id="budget" name="type" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors">
+                        <option value="web">Web / app build</option>
+                        <option value="brand">Brand & design</option>
+                        <option value="commerce">E-commerce / drops</option>
+                        <option value="other">Something else</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="message" class="block text-xs uppercase tracking-wider text-gray-500 mb-2">Message</label>
+                    <textarea id="message" name="message" rows="5" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors resize-y min-h-[120px]" placeholder="Scope, timeline, links…"></textarea>
+                </div>
+                <button type="submit" class="w-full sm:w-auto px-10 py-4 bg-brand-accent hover:bg-brand-orange text-white rounded-full font-medium transition-all hover:scale-[1.02]">
+                    Send message
+                </button>
+                <p id="form-status" class="text-sm text-gray-500 hidden" aria-live="polite"></p>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="border-t border-white/10 py-16 bg-brand-dark/50">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-center md:text-left">
+                <p class="text-2xl font-display font-bold tracking-tight"><span class="text-brand-accent">43</span> INDUSTRIES</p>
+                <p class="text-gray-500 text-sm mt-2">Distinct digital culture — Louisville, KY</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+                <a href="#about" class="hover:text-brand-accent transition-colors">About</a>
+                <a href="#services" class="hover:text-brand-accent transition-colors">Services</a>
+                <a href="#work" class="hover:text-brand-accent transition-colors">Work</a>
+                <a href="#store" class="hover:text-brand-accent transition-colors">Store</a>
+                <a href="https://instagram.com/43_industries" target="_blank" rel="noopener noreferrer" class="hover:text-brand-accent transition-colors">Instagram</a>
+            </div>
+        </div>
+        <p class="text-center text-gray-600 text-xs mt-12">© <span id="year"></span> 43 Industries. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+(function () {
+    'use strict';
+
+    /**
+     * SETUP (email + cart)
+     * Netlify: Site settings → Environment variables (do not commit secrets to Git):
+     *   WEB3FORMS_ACCESS_KEY, SHOPIFY_SHOP_DOMAIN, SHOPIFY_STOREFRONT_TOKEN,
+     *   SHOPIFY_STOREFRONT_URL, optional SHOPIFY_COLLECTION_PATH
+     * Each deploy runs `npm run build`, which copies index.html → dist/ and injects those values.
+     * Local preview: paste keys into the empty strings below, or set env vars and run npm run build.
+     *
+     * 1) Web3Forms: https://web3forms.com → access key → WEB3FORMS_ACCESS_KEY
+     * 2) Shopify Storefront API token + myshopify.com domain (see netlify.toml comments)
+     * 3) Product cards: data-shopify-variant-gid + data-product-handle
+     */
+    var SITE_CONFIG = {
+        web3formsAccessKey: '',
+        shopifyShopDomain: '',
+        shopifyStorefrontToken: '',
+        shopifyStorefrontUrl: '',
+        shopifyCollectionPath: '/collections/all'
+    };
+
+    var LS_CART_ID = '43i_shopify_cart_id';
+    var LS_CHECKOUT_URL = '43i_shopify_checkout_url';
+
+    function toggleMobileMenu() {
+        var menu = document.getElementById('mobile-menu');
+        if (menu) menu.classList.toggle('hidden');
+    }
+    window.toggleMobileMenu = toggleMobileMenu;
+
+    function handleMouseMove(e, el) {
+        var r = el.getBoundingClientRect();
+        var x = ((e.clientX - r.left) / r.width) * 100;
+        var y = ((e.clientY - r.top) / r.height) * 100;
+        el.style.setProperty('--x', x + '%');
+        el.style.setProperty('--y', y + '%');
+    }
+    window.handleMouseMove = handleMouseMove;
+
+    function handleMouseLeave(el) {
+        el.style.setProperty('--x', '50%');
+        el.style.setProperty('--y', '50%');
+    }
+    window.handleMouseLeave = handleMouseLeave;
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    var form = document.getElementById('contact-form');
+    var formStatus = document.getElementById('form-status');
+    function setFormMessage(text, isError) {
+        if (!formStatus) return;
+        formStatus.classList.remove('hidden', 'text-red-400', 'text-green-400');
+        formStatus.textContent = text;
+        formStatus.classList.add(isError ? 'text-red-400' : 'text-green-400');
+    }
+    if (form && formStatus) {
+        form.addEventListener('submit', function (ev) {
+            ev.preventDefault();
+            var key = SITE_CONFIG.web3formsAccessKey;
+            if (!key || !String(key).trim()) {
+                setFormMessage('Add WEB3FORMS_ACCESS_KEY in Netlify environment variables (or paste the key locally in SITE_CONFIG).', true);
+                return;
+            }
+            var btn = form.querySelector('button[type="submit"]');
+            var prev = btn ? btn.textContent : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Sending…';
+            }
+            var nameEl = document.getElementById('name');
+            var emailEl = document.getElementById('email');
+            var typeEl = document.getElementById('budget');
+            var msgEl = document.getElementById('message');
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify({
+                    access_key: key,
+                    subject: '43 Industries — New project inquiry',
+                    name: nameEl ? nameEl.value : '',
+                    email: emailEl ? emailEl.value : '',
+                    from_name: nameEl ? nameEl.value : '',
+                    replyto: emailEl ? emailEl.value : '',
+                    message: 'Project type: ' + (typeEl ? typeEl.value : '') + '\n\n' + (msgEl ? msgEl.value : '')
+                })
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data && data.success) {
+                        setFormMessage('Thanks — we\'ll get back to you soon.', false);
+                        form.reset();
+                    } else {
+                        setFormMessage((data && data.message) || 'Could not send. Try again or email us directly.', true);
+                    }
+                })
+                .catch(function () {
+                    setFormMessage('Network error. Check your connection and try again.', true);
+                })
+                .finally(function () {
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = prev;
+                    }
+                });
+        });
+    }
+
+    var storeToast = document.getElementById('store-cart-toast');
+    function flashStoreToast(msg, isError) {
+        if (!storeToast) return;
+        storeToast.textContent = msg || '';
+        storeToast.classList.toggle('text-red-400', !!isError);
+        storeToast.classList.toggle('text-brand-accent', !isError && !!msg);
+        if (msg && !isError) {
+            window.setTimeout(function () {
+                if (storeToast.textContent === msg) storeToast.textContent = '';
+            }, 4000);
+        }
+    }
+
+    function shopifyFetch(body) {
+        var domain = (SITE_CONFIG.shopifyShopDomain || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
+        var token = SITE_CONFIG.shopifyStorefrontToken;
+        if (!domain || !token) return Promise.reject(new Error('Shopify not configured'));
+        var url = 'https://' + domain + '/api/2024-10/graphql.json';
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Storefront-Access-Token': token
+            },
+            body: JSON.stringify(body)
+        }).then(function (r) { return r.json(); });
+    }
+
+    function setCartUi(totalQty) {
+        var n = typeof totalQty === 'number' ? totalQty : 0;
+        document.querySelectorAll('.js-cart-count').forEach(function (el) {
+            el.textContent = String(n);
+        });
+        try {
+            localStorage.setItem('43i_cart_qty', String(n));
+        } catch (e) { /* ignore */ }
+    }
+
+    function persistCart(cart) {
+        if (!cart || !cart.id) return;
+        try {
+            localStorage.setItem(LS_CART_ID, cart.id);
+            if (cart.checkoutUrl) localStorage.setItem(LS_CHECKOUT_URL, cart.checkoutUrl);
+        } catch (e) { /* ignore */ }
+        setCartUi(cart.totalQuantity != null ? cart.totalQuantity : 0);
+    }
+
+    function clearStoredCart() {
+        try {
+            localStorage.removeItem(LS_CART_ID);
+            localStorage.removeItem(LS_CHECKOUT_URL);
+        } catch (e) { /* ignore */ }
+    }
+
+    function normalizeVariantGid(v) {
+        v = String(v || '').trim();
+        if (!v) return '';
+        if (v.indexOf('gid://shopify/ProductVariant/') === 0) return v;
+        if (/^\d+$/.test(v)) return 'gid://shopify/ProductVariant/' + v;
+        return v;
+    }
+
+    function addVariantToCart(variantGid) {
+        var gid = normalizeVariantGid(variantGid);
+        if (!gid) {
+            flashStoreToast('Set product variant: add data-shopify-variant-gid (numeric ID or full gid://…) on this product.', true);
+            return Promise.resolve();
+        }
+        var domainOk = SITE_CONFIG.shopifyShopDomain && SITE_CONFIG.shopifyStorefrontToken;
+        if (!domainOk) {
+            flashStoreToast('Add shopifyShopDomain and shopifyStorefrontToken to SITE_CONFIG.', true);
+            return Promise.resolve();
+        }
+
+        var cartId = null;
+        try {
+            cartId = localStorage.getItem(LS_CART_ID);
+        } catch (e) { /* ignore */ }
+
+        var line = { merchandiseId: gid, quantity: 1 };
+
+        function createCart() {
+            return shopifyFetch({
+                query: 'mutation($lines:[CartLineInput!]){ cartCreate(input:{ lines:$lines }){ cart{ id totalQuantity checkoutUrl } userErrors{ message field } } }',
+                variables: { lines: [line] }
+            }).then(function (json) {
+                var p = json && json.data && json.data.cartCreate;
+                if (!p || !p.cart) {
+                    var err = (p && p.userErrors && p.userErrors[0] && p.userErrors[0].message) || (json.errors && json.errors[0] && json.errors[0].message) || 'Cart error';
+                    throw new Error(err);
+                }
+                if (p.userErrors && p.userErrors.length) throw new Error(p.userErrors[0].message);
+                persistCart(p.cart);
+                return p.cart;
+            });
+        }
+
+        function addLine(cId) {
+            return shopifyFetch({
+                query: 'mutation($cartId:ID!,$lines:[CartLineInput!]!){ cartLinesAdd(cartId:$cartId, lines:$lines){ cart{ id totalQuantity checkoutUrl } userErrors{ message } } }',
+                variables: { cartId: cId, lines: [line] }
+            }).then(function (json) {
+                var p = json && json.data && json.data.cartLinesAdd;
+                if (p && p.userErrors && p.userErrors.length) throw new Error(p.userErrors[0].message);
+                if (!p || !p.cart) {
+                    var msg = (json.errors && json.errors[0] && json.errors[0].message) || 'Could not update cart';
+                    throw new Error(msg);
+                }
+                persistCart(p.cart);
+                return p.cart;
+            });
+        }
+
+        if (!cartId) {
+            return createCart()
+                .then(function () { flashStoreToast('Added to cart — open CART to check out.', false); })
+                .catch(function (err) {
+                    clearStoredCart();
+                    setCartUi(0);
+                    flashStoreToast(err.message || 'Shopify error', true);
+                });
+        }
+
+        return addLine(cartId)
+            .then(function () { flashStoreToast('Added to cart — open CART to check out.', false); })
+            .catch(function () {
+                clearStoredCart();
+                setCartUi(0);
+                return createCart()
+                    .then(function () { flashStoreToast('Added to cart — open CART to check out.', false); })
+                    .catch(function (err) {
+                        flashStoreToast(err.message || 'Shopify error', true);
+                    });
+            });
+    }
+
+    function refreshCartCountFromShopify() {
+        var domainOk = SITE_CONFIG.shopifyShopDomain && SITE_CONFIG.shopifyStorefrontToken;
+        if (!domainOk) return;
+        var cartId = null;
+        try {
+            cartId = localStorage.getItem(LS_CART_ID);
+        } catch (e) { return; }
+        if (!cartId) {
+            setCartUi(0);
+            return;
+        }
+        shopifyFetch({
+            query: 'query($id:ID!){ cart(id:$id){ id totalQuantity checkoutUrl } }',
+            variables: { id: cartId }
+        }).then(function (json) {
+            var c = json && json.data && json.data.cart;
+            if (!c) {
+                clearStoredCart();
+                setCartUi(0);
+                return;
+            }
+            persistCart(c);
+        }).catch(function () { /* offline */ });
+    }
+
+    function openShopifyCheckout() {
+        var domainOk = SITE_CONFIG.shopifyShopDomain && SITE_CONFIG.shopifyStorefrontToken;
+        if (!domainOk) {
+            flashStoreToast('Configure SITE_CONFIG with Shopify domain and Storefront token.', true);
+            return;
+        }
+        var cartId = null;
+        try {
+            cartId = localStorage.getItem(LS_CART_ID);
+        } catch (e) { /* ignore */ }
+        if (!cartId) {
+            var quick = null;
+            try {
+                quick = localStorage.getItem(LS_CHECKOUT_URL);
+            } catch (e) { /* ignore */ }
+            if (quick) {
+                window.location.href = quick;
+                return;
+            }
+            flashStoreToast('Your cart is empty — add something from the store below.', true);
+            var s = document.getElementById('store');
+            if (s) s.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+        shopifyFetch({
+            query: 'query($id:ID!){ cart(id:$id){ checkoutUrl totalQuantity } }',
+            variables: { id: cartId }
+        }).then(function (json) {
+            var c = json && json.data && json.data.cart;
+            if (!c || !c.checkoutUrl) {
+                clearStoredCart();
+                setCartUi(0);
+                flashStoreToast('Cart expired — add items again.', true);
+                return;
+            }
+            try {
+                localStorage.setItem(LS_CHECKOUT_URL, c.checkoutUrl);
+            } catch (e) { /* ignore */ }
+            window.location.href = c.checkoutUrl;
+        }).catch(function () {
+            flashStoreToast('Could not open checkout. Check your connection.', true);
+        });
+    }
+    window.openShopifyCheckout = openShopifyCheckout;
+
+    document.querySelectorAll('.shopify-add-to-cart').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var gid = btn.getAttribute('data-shopify-variant-gid');
+            addVariantToCart(gid);
+        });
+    });
+
+    document.querySelectorAll('[data-quick-view]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var card = a.closest('[data-product-handle]');
+            var handle = card && card.getAttribute('data-product-handle');
+            var base = (SITE_CONFIG.shopifyStorefrontUrl || '').replace(/\/$/, '');
+            if (!base || !handle) {
+                flashStoreToast('Set shopifyStorefrontUrl in SITE_CONFIG and data-product-handle on each product.', true);
+                return;
+            }
+            window.open(base + '/products/' + handle, '_blank', 'noopener,noreferrer');
+        });
+    });
+
+    var collectionLink = document.getElementById('shopify-collection-link');
+    if (collectionLink) {
+        var b = (SITE_CONFIG.shopifyStorefrontUrl || '').replace(/\/$/, '');
+        var path = SITE_CONFIG.shopifyCollectionPath || '/collections/all';
+        if (b) collectionLink.href = b + path;
+    }
+
+    var navCart = document.getElementById('nav-cart-btn');
+    var navCartMob = document.getElementById('nav-cart-btn-mobile');
+    if (navCart) navCart.addEventListener('click', openShopifyCheckout);
+    if (navCartMob) navCartMob.addEventListener('click', openShopifyCheckout);
+
+    refreshCartCountFromShopify();
+
+    var cursor = document.querySelector('.custom-cursor');
+    if (cursor && window.matchMedia('(min-width: 768px)').matches) {
+        var mx = 0, my = 0, cx = 0, cy = 0;
+        document.addEventListener('mousemove', function (e) {
+            mx = e.clientX;
+            my = e.clientY;
+        });
+        function tickCursor() {
+            cx += (mx - cx) * 0.15;
+            cy += (my - cy) * 0.15;
+            cursor.style.left = (cx - 10) + 'px';
+            cursor.style.top = (cy - 10) + 'px';
+            requestAnimationFrame(tickCursor);
+        }
+        tickCursor();
+        document.querySelectorAll('a, button, .service-card, .cursor-hover').forEach(function (el) {
+            el.addEventListener('mouseenter', function () { cursor.classList.add('hover'); });
+            el.addEventListener('mouseleave', function () { cursor.classList.remove('hover'); });
+        });
+    }
+
+    var navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', function () {
+        if (!navbar) return;
+        if (window.scrollY > 50) {
+            navbar.classList.add('bg-brand-black/90', 'backdrop-blur-md');
+        } else {
+            navbar.classList.remove('bg-brand-black/90', 'backdrop-blur-md');
+        }
+    }, { passive: true });
+
+    function initHeroThree() {
+        var canvas = document.getElementById('hero-canvas');
+        if (!canvas || typeof THREE === 'undefined') return;
+        var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+        camera.position.z = 4;
+
+        var group = new THREE.Group();
+        var geo = new THREE.IcosahedronGeometry(1.2, 1);
+        var mat = new THREE.MeshStandardMaterial({
+            color: 0xff3d00,
+            wireframe: true,
+            emissive: 0xff3d00,
+            emissiveIntensity: 0.35
+        });
+        group.add(new THREE.Mesh(geo, mat));
+        var inner = new THREE.Mesh(
+            new THREE.IcosahedronGeometry(0.85, 0),
+            new THREE.MeshBasicMaterial({ color: 0xff9100, wireframe: true, transparent: true, opacity: 0.35 })
+        );
+        group.add(inner);
+        scene.add(group);
+
+        var light = new THREE.DirectionalLight(0xffffff, 0.8);
+        light.position.set(2, 2, 5);
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x404040, 1.2));
+
+        var particles = 800;
+        var pos = new Float32Array(particles * 3);
+        for (var i = 0; i < particles; i++) {
+            pos[i * 3] = (Math.random() - 0.5) * 12;
+            pos[i * 3 + 1] = (Math.random() - 0.5) * 12;
+            pos[i * 3 + 2] = (Math.random() - 0.5) * 8;
+        }
+        var pGeo = new THREE.BufferGeometry();
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        var pMat = new THREE.PointsMaterial({ color: 0xff6b00, size: 0.03, transparent: true, opacity: 0.6 });
+        var pts = new THREE.Points(pGeo, pMat);
+        scene.add(pts);
+
+        function resize() {
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        var t = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            t += 0.008;
+            group.rotation.x = t * 0.4;
+            group.rotation.y = t * 0.6;
+            inner.rotation.y = -t * 0.9;
+            pts.rotation.y = t * 0.05;
+            renderer.render(scene, camera);
+        }
+        animate();
+    }
+    initHeroThree();
+
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.utils.toArray('.stat-number').forEach(function (el) {
+            var target = parseInt(el.getAttribute('data-target'), 10);
+            if (isNaN(target)) return;
+            var obj = { val: 0 };
+            gsap.to(obj, {
+                val: target,
+                duration: 2,
+                ease: 'power2.out',
+                scrollTrigger: { trigger: el.closest('section') || el, start: 'top 80%' },
+                onUpdate: function () {
+                    el.textContent = Math.round(obj.val);
+                }
+            });
+        });
+
+        gsap.from('#about h3, #about > div > div > div:nth-child(1) p', {
+            scrollTrigger: { trigger: '#about', start: 'top 75%' },
+            y: 40,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.12,
+            ease: 'power3.out'
+        });
+
+        gsap.utils.toArray('#services .service-card').forEach(function (card, i) {
+            gsap.from(card, {
+                scrollTrigger: { trigger: card, start: 'top 88%' },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                delay: i * 0.06,
+                ease: 'power3.out'
+            });
+        });
+
+        gsap.utils.toArray('#work .glass-panel').forEach(function (card, i) {
+            gsap.from(card, {
+                scrollTrigger: { trigger: card, start: 'top 90%' },
+                y: 60,
+                opacity: 0,
+                duration: 0.9,
+                delay: (i % 2) * 0.1,
+                ease: 'power3.out'
+            });
+        });
+    }
+})();
+</script>
+</body>
+</html>
